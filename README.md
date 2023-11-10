@@ -1,4 +1,3 @@
-# SimpleWebServer-DI-FromScratch
 # Minimalist Web Server Implementation
 
 Welcome to the Minimalist Web Server repository! This project is a from-scratch implementation of a web server, devoid of external libraries to emphasize simplicity and facilitate a deep understanding of web server development fundamentals.
