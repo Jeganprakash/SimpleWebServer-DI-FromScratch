@@ -26,7 +26,7 @@ class Controller {
         val body = "health is fantastic"
         return Response(
             status = 200,
-            protocol = "HTTP",
+            protocol = request.protocol,
             protocolVersion = request.protocolVersion,
             body = body,
             headers = request.headers)
@@ -37,7 +37,7 @@ class Controller {
         val body = threadDetailsService.getCurrentThreadDetails()
         return Response(
             status = 200,
-            protocol = "HTTP",
+            protocol = request.protocol,
             protocolVersion = request.protocolVersion,
             body = body,
             headers = request.headers)

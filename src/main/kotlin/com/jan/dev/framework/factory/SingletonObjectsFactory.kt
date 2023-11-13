@@ -3,8 +3,12 @@ package com.jan.dev.framework.factory
 import com.jan.dev.framework.annotation.Injected
 import com.jan.dev.framework.annotation.SingletonObject
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.WildcardType
+import java.net.JarURLConnection
+import java.net.URL
 import java.util.concurrent.ConcurrentHashMap
 
 object SingletonObjectsFactory {
@@ -20,7 +24,6 @@ object SingletonObjectsFactory {
     }
 
     fun getObject(key: Class<*>): Any {
-        // TODO::Validate Key
         return singletonObjects[key]!!
     }
 
@@ -35,7 +38,6 @@ object SingletonObjectsFactory {
     }
 
     private fun registerObject(key: Class<*>, instance: Any) {
-        // TODO::Validate Key
         singletonObjects[key] = instance
     }
 
@@ -46,18 +48,23 @@ object SingletonObjectsFactory {
 
         while (resources.hasMoreElements()) {
             val resource = resources.nextElement()
-            val file = File(resource.file)
-
-            if (file.isDirectory) {
-                val classFiles = mutableListOf<File>()
-                findClassFiles(file, classFiles)
-                classFiles.forEach {
-                    val className = it.toClassName(packageName)
-                    val clazz = Class.forName(className)
-                    allClassesInCurrentPackage.add(clazz)
+            if (resource.protocol == "jar") {
+                readClassesFromJAr(resource,path)
+                break
+            } else {
+                val file = File(resource.file)
+                if (file.isDirectory) {
+                    val classFiles = mutableListOf<File>()
+                    findClassFiles(file, classFiles)
+                    classFiles.forEach {
+                        val className = it.toClassName(packageName)
+                        val clazz = Class.forName(className)
+                        allClassesInCurrentPackage.add(clazz)
+                    }
                 }
             }
         }
+        println("scanned classes Count ${allClassesInCurrentPackage.size}")
     }
 
     private fun filterClassesWithSingleTonAnnotation() {
@@ -130,5 +137,27 @@ object SingletonObjectsFactory {
         return singletonObjects.values.filter { obj ->
             obj.javaClass.getAnnotation(annotation) != null
         }
+    }
+
+    private fun readClassesFromJAr(res: URL,targetPackagePath:String) {
+        try {
+            val connection = res.openConnection() as JarURLConnection
+            val jarFile = connection.jarFile
+            val entries = jarFile.entries()
+            while (entries.hasMoreElements()) {
+                val jarEntry = entries.nextElement()
+                if (jarEntry.name.endsWith(".class") && jarEntry.name.startsWith(targetPackagePath.replace(".", "/"))) {
+                    val className = jarEntry.name
+                        .replace("/", ".")
+                        .replace(".class", "")
+                    val clazz = Class.forName(className)
+                    allClassesInCurrentPackage.add(clazz)
+                }
+            }
+
+        } catch (ex: IOException) {
+            ex.printStackTrace()
+        }
+
     }
 }
