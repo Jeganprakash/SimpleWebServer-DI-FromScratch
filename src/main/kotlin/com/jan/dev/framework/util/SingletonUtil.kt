@@ -8,8 +8,8 @@ import com.jan.dev.framework.factory.SingletonObjectsFactory
 import java.lang.reflect.Method
 
 @SingletonObject
-class AnnotationUtil {
-    fun getPathMatchedControllerAnnotatedObject(path: String, method: HttpMethod): Any? {
+class SingletonUtil {
+    fun getPathMatchedController(path: String, method: HttpMethod): Any? {
         val objects = getAllControllerAnnotatedObjects()
         objects.forEach {
             val controllerPathsList = getAllControllerPathsOfObject(it, method)

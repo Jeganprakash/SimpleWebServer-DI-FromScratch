@@ -3,7 +3,6 @@ package com.jan.dev.framework.factory
 import com.jan.dev.framework.annotation.Injected
 import com.jan.dev.framework.annotation.SingletonObject
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.WildcardType
@@ -49,7 +48,7 @@ object SingletonObjectsFactory {
         while (resources.hasMoreElements()) {
             val resource = resources.nextElement()
             if (resource.protocol == "jar") {
-                readClassesFromJAr(resource,path)
+                readClassesFromJAr(resource, path)
                 break
             } else {
                 val file = File(resource.file)
@@ -139,7 +138,7 @@ object SingletonObjectsFactory {
         }
     }
 
-    private fun readClassesFromJAr(res: URL,targetPackagePath:String) {
+    private fun readClassesFromJAr(res: URL, targetPackagePath: String) {
         try {
             val connection = res.openConnection() as JarURLConnection
             val jarFile = connection.jarFile
@@ -154,10 +153,8 @@ object SingletonObjectsFactory {
                     allClassesInCurrentPackage.add(clazz)
                 }
             }
-
         } catch (ex: IOException) {
             ex.printStackTrace()
         }
-
     }
 }
