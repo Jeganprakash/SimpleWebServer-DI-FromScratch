@@ -17,9 +17,8 @@ abstract class ServerIOHandler : ServerConnectionThreadHandler() {
         clientSocket.getOutputStream().write(outputData.second.toByteArray())
         if (outputData.first == "websocket") {
             handleWebsocket(clientSocket)
-        } else {
-            clientSocket.close()
         }
+        clientSocket.close()
     }
 
     private fun handleWebsocket(clientSocket: Socket) {
